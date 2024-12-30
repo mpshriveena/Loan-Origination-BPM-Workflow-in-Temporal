@@ -2,6 +2,8 @@ import sqlite3
 
 DATABASE1 = 'userdb.sqlite3'
 DATABASE2 = 'transactiondb.sqlite3'
+DATABASE3 = 'commentsdb.sqlite3'
+
 
 def init_db():
     conn = sqlite3.connect(DATABASE1)
@@ -33,6 +35,20 @@ def init_db():
             monthlyEMI TEXT NOT NULL,
             disbursementStatus TEXT NOT NULL,
             paymentStatus TEXT NOT NULL
+        )
+    ''')
+    conn.commit()
+    conn.close()
+    
+    conn = sqlite3.connect(DATABASE3)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS reviewer_comments (
+            commentsId INTEGER PRIMARY KEY AUTOINCREMENT,
+            loanId TEXT NOT NULL,
+            reviewerId TEXT NOT NULL,
+            approvalStatus TEXT NOT NULL,
+            comments TEXT NOT NULL
         )
     ''')
     conn.commit()

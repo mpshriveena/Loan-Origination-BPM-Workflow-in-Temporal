@@ -11,6 +11,8 @@ from email.mime.multipart import MIMEMultipart
 
 DATABASE1 = '/userdb.sqlite3'
 DATABASE2 = '/transactiondb.sqlite3'
+DATABASE3 = 'commentsdb.sqlite3'
+
 
 class loanActivities:
     def __init__(self, session):
@@ -128,6 +130,23 @@ class loanActivities:
         producer.flush()
         producer.close()
         return kafka_message
+    @activity.defn
+    async def persist_reviewer_comments(comments_data: dict) -> dict:
+        conn = sqlite3.connect(DATABASE3)
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO reviewer_comments (loanId, reviewerId, approvalStatus, comments)
+            VALUES (?, ?, ?, ?)
+        ''', (
+            comments_data['loanId'],
+            comments_data['reviewerId'],
+            comments_data['approvalStatus'],
+            comments_data['comments']
+        ))
+        conn.commit()
+        commentsId = cursor.lastrowid
+        conn.close()
+        return {'commentsId': commentsId}
     
 class emailActivities:  
     @activity.defn

@@ -41,6 +41,15 @@ class LoanWorkflow:
             print(f"Workflow Status: {self.workflow_status}")
         while self.workflow_status=="waiting_for_manual_approval":
             await workflow.sleep(1)
+        persist_comments_data = {'loanId':loan_data['applicationId'],
+                                 'reviewerId':self.result['reviewerId'],
+                                 'approvalStatus':self.result['approvalStatus'],
+                                 'comments':self.result['comments'],}
+        persist_confirmation = await workflow.execute_activity_method(
+            loanActivities.persist_reviewer_comments,
+            persist_comments_data,
+            start_to_close_timeout=timedelta(seconds=10000),
+        )
         if self.workflow_status == "manually_approved":
             print(f"Workflow Status: {self.workflow_status}")
             self.workflow_status = "loan_pricing"

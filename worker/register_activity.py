@@ -18,6 +18,7 @@ async def main():
             workflows=[LoanWorkflow,EmailNotificationWorkflow],
             activities=[loanActivities.persist_loan_application,
                         loanactivities.is_eligible,
+                        loanActivities.persist_reviewer_comments,
                         loanActivities.loan_pricing,
                         loanActivities.loan_disbursement,
                         emailActivities.send_email,
